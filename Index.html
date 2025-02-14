@@ -6,33 +6,62 @@
     <title>Rubik's Cube Timer</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Orbitron', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background: #1b1b1b;
+            color: #fff;
+            overflow: hidden;
         }
         .container {
             text-align: center;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+            width: 400px;
+            box-sizing: border-box;
         }
         #timer {
-            font-size: 48px;
+            font-size: 80px;
+            font-weight: bold;
+            color: #00fff0;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
             margin-bottom: 20px;
+            transition: transform 0.3s ease;
         }
         #scramble {
-            font-size: 24px;
+            font-size: 20px;
+            color: #ccc;
             margin-bottom: 20px;
+            font-style: italic;
         }
-        button, select {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
+        select, button {
+            padding: 15px 25px;
+            font-size: 18px;
+            border: 2px solid #00fff0;
+            background-color: transparent;
+            border-radius: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #00fff0;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        button:hover, select:hover {
+            background-color: #00fff0;
+            color: #1b1b1b;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 1);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        select:focus, button:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 1);
         }
     </style>
 </head>
@@ -50,19 +79,21 @@
         </select>
         <button onclick="startTimer()">Start Timer</button>
         <button onclick="stopTimer()">Stop Timer</button>
-        <button onclick="generateScramble()">New Scramble</button>
+        <button id="newScrambleButton" onclick="generateScramble()">New Scramble</button>
     </div>
 
     <script>
         let startTime;
         let timerInterval;
         let isRunning = false;
+        let scrambleGenerated = false; // To track if scramble has been generated
 
         function startTimer() {
             if (!isRunning) {
                 startTime = Date.now() - (startTime ? startTime : 0);
                 timerInterval = setInterval(updateTimer, 10);
                 isRunning = true;
+                document.getElementById('timer').style.transform = 'scale(1.2)';
             }
         }
 
@@ -71,6 +102,8 @@
                 clearInterval(timerInterval);
                 startTime = null;
                 isRunning = false;
+                document.getElementById('timer').style.transform = 'scale(1)';
+                generateScramble(); // Automatically generate a new scramble when timer stops
             }
         }
 
@@ -138,8 +171,31 @@
             }
 
             document.getElementById('scramble').textContent = scramble.trim();
+            
+            if (!scrambleGenerated) {
+                document.getElementById('newScrambleButton').style.display = 'none'; // Hide the button after the first scramble
+                scrambleGenerated = true; // Mark scramble as generated
+            }
         }
+
+        // Adding spacebar functionality to start/stop the timer
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                if (isRunning) {
+                    stopTimer();
+                } else {
+                    startTimer();
+                }
+            }
+        });
+
+        // Show the "New Scramble" button when the cube type changes
+        document.getElementById('cubeType').addEventListener('change', function() {
+            if (scrambleGenerated) {
+                document.getElementById('newScrambleButton').style.display = 'inline-block'; // Show the button again
+                scrambleGenerated = false; // Reset scramble state so the button is shown
+            }
+        });
     </script>
 </body>
 </html>
-

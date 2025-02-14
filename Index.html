@@ -1,1 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubik's Cube Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #timer {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        #scramble {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        button, select {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="timer">0.00</div>
+        <div id="scramble">Select a cube type and click "New Scramble" to generate a scramble</div>
+        <select id="cubeType">
+            <option value="2x2">2x2</option>
+            <option value="3x3">3x3</option>
+            <option value="4x4">4x4</option>
+            <option value="5x5">5x5</option>
+            <option value="6x6">6x6</option>
+            <option value="7x7">7x7</option>
+        </select>
+        <button onclick="startTimer()">Start Timer</button>
+        <button onclick="stopTimer()">Stop Timer</button>
+        <button onclick="generateScramble()">New Scramble</button>
+    </div>
+
+    <script>
+        let startTime;
+        let timerInterval;
+        let isRunning = false;
+
+        function startTimer() {
+            if (!isRunning) {
+                startTime = Date.now() - (startTime ? startTime : 0);
+                timerInterval = setInterval(updateTimer, 10);
+                isRunning = true;
+            }
+        }
+
+        function stopTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                startTime = null;
+                isRunning = false;
+            }
+        }
+
+        function updateTimer() {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime;
+            const seconds = (elapsedTime / 1000).toFixed(2);
+            document.getElementById('timer').textContent = seconds;
+        }
+
+        function generateScramble() {
+            const cubeType = document.getElementById('cubeType').value;
+            let moves = [];
+            let length = 0;
+
+            switch (cubeType) {
+                case '2x2':
+                    moves = ['U', 'D', 'L', 'R', 'F', 'B'];
+                    length = 10;
+                    break;
+                case '3x3':
+                    moves = ['U', 'D', 'L', 'R', 'F', 'B'];
+                    length = 25;
+                    break;
+                case '4x4':
+                    moves = ['U', 'D', 'L', 'R', 'F', 'B', 'Uw', 'Dw', 'Lw', 'Rw', 'Fw', 'Bw'];
+                    length = 40;
+                    break;
+                case '5x5':
+                    moves = ['U', 'D', 'L', 'R', 'F', 'B', 'Uw', 'Dw', 'Lw', 'Rw', 'Fw', 'Bw'];
+                    length = 60;
+                    break;
+                case '6x6':
+                    moves = ['U', 'D', 'L', 'R', 'F', 'B', 'Uw', 'Dw', 'Lw', 'Rw', 'Fw', 'Bw', '3Uw', '3Dw', '3Lw', '3Rw', '3Fw', '3Bw'];
+                    length = 80;
+                    break;
+                case '7x7':
+                    moves = ['U', 'D', 'L', 'R', 'F', 'B', 'Uw', 'Dw', 'Lw', 'Rw', 'Fw', 'Bw', '3Uw', '3Dw', '3Lw', '3Rw', '3Fw', '3Bw'];
+                    length = 100;
+                    break;
+            }
+
+            const modifiers = ['', '\'', '2'];
+            let scramble = '';
+            let lastMove = '';
+
+            for (let i = 0; i < length; i++) {
+                let move = moves[Math.floor(Math.random() * moves.length)];
+                let modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
+
+                // Check for opposite moves
+                while (move === lastMove || (move === lastMove.slice(0, -1) && modifier === '\'')) {
+                    move = moves[Math.floor(Math.random() * moves.length)];
+                    modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
+                }
+
+                // Handle consecutive identical moves
+                if (move === lastMove) {
+                    scramble = scramble.slice(0, -1) + '2 ';
+                } else {
+                    scramble += move + modifier + ' ';
+                }
+
+                lastMove = move + modifier;
+            }
+
+            document.getElementById('scramble').textContent = scramble.trim();
+        }
+    </script>
+</body>
+</html>
 
